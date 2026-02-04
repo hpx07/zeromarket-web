@@ -1,0 +1,1155 @@
+{
+  "project": {
+    "name": "ZeroMarket",
+    "tagline": "Your All-in-One Serverless Market Intelligence Platform",
+    "version": "1.0.0",
+    "description": "A production-ready, serverless platform for live stock prices, crypto analysis, finance news, and comprehensive trading tools"
+  },
+
+  "tech_stack": {
+    "frontend": {
+      "framework": "Next.js 14 (App Router)",
+      "language": "TypeScript",
+      "styling": "TailwindCSS + shadcn/ui",
+      "3d_library": "Three.js + React Three Fiber (R3F)",
+      "state_management": "Zustand",
+      "data_fetching": "TanStack Query (React Query)",
+      "forms": "React Hook Form + Zod",
+      "charts": [
+        "Lightweight Charts (TradingView)",
+        "Recharts (for additional visualizations)",
+        "Chart.js (for specific tools)"
+      ],
+      "animations": "Framer Motion",
+      "icons": "Lucide React",
+      "utilities": [
+        "date-fns (date manipulation)",
+        "numeral.js (number formatting)",
+        "lodash (utilities)"
+      ]
+    },
+    "backend": {
+      "type": "Serverless",
+      "platform": "Vercel Edge Functions / Next.js API Routes",
+      "caching": "Vercel Edge Config + SWR",
+      "scheduled_jobs": "Vercel Cron Jobs (for alerts)"
+    },
+    "storage": {
+      "client_side": "IndexedDB (via Dexie.js)",
+      "local_storage": "localStorage (for preferences)",
+      "optional_backend": "Supabase (for user authentication and cloud sync)"
+    },
+    "deployment": {
+      "platform": "Vercel",
+      "ci_cd": "GitHub Actions (optional)",
+      "analytics": "Vercel Analytics + Plausible (privacy-friendly)"
+    }
+  },
+
+  "free_apis": {
+    "stocks_indian": {
+      "nse_india": {
+        "url": "https://www.nseindia.com/api",
+        "endpoints": {
+          "nifty_live": "/equity-stockIndices?index=NIFTY%2050",
+          "bank_nifty_live": "/equity-stockIndices?index=NIFTY%20BANK",
+          "option_chain_nifty": "/option-chain-indices?symbol=NIFTY",
+          "option_chain_banknifty": "/option-chain-indices?symbol=BANKNIFTY",
+          "stock_quote": "/quote-equity?symbol={SYMBOL}"
+        },
+        "auth": "None (requires headers to bypass CORS)",
+        "rate_limit": "Use serverless proxy to avoid CORS",
+        "notes": "Needs custom headers: User-Agent, Accept-Language, Accept-Encoding"
+      }
+    },
+    "stocks_global": {
+      "yahoo_finance": {
+        "library": "yahoo-finance2 (npm)",
+        "endpoints": {
+          "quote": "yahooFinance.quote(symbol)",
+          "historical": "yahooFinance.historical(symbol, options)",
+          "chart": "yahooFinance.chart(symbol)"
+        },
+        "auth": "None",
+        "rate_limit": "Reasonable usage (no official limit)",
+        "symbols_example": ["AAPL", "GOOGL", "TSLA", "MSFT", "AMZN"]
+      },
+      "alpha_vantage": {
+        "url": "https://www.alphavantage.co/query",
+        "api_key": "Get free key from alphavantage.co",
+        "rate_limit": "25 requests/day (free tier)",
+        "endpoints": {
+          "quote": "function=GLOBAL_QUOTE&symbol={symbol}",
+          "intraday": "function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=5min",
+          "daily": "function=TIME_SERIES_DAILY&symbol={symbol}"
+        },
+        "use_case": "Backup for Yahoo Finance, earnings calendar"
+      }
+    },
+    "crypto": {
+      "coingecko": {
+        "url": "https://api.coingecko.com/api/v3",
+        "api_key": "None required (demo tier)",
+        "rate_limit": "10-50 calls/minute (demo)",
+        "endpoints": {
+          "simple_price": "/simple/price?ids={ids}&vs_currencies=usd,inr&include_24hr_change=true",
+          "coin_market_chart": "/coins/{id}/market_chart?vs_currency=usd&days={days}",
+          "trending": "/search/trending",
+          "global": "/global",
+          "top_coins": "/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100"
+        }
+      },
+      "coincap": {
+        "url": "https://api.coincap.io/v2",
+        "websocket": "wss://ws.coincap.io/prices?assets=bitcoin,ethereum",
+        "api_key": "None required",
+        "rate_limit": "200 requests/minute",
+        "endpoints": {
+          "assets": "/assets",
+          "asset_history": "/assets/{id}/history?interval=d1",
+          "markets": "/markets"
+        },
+        "use_case": "Real-time WebSocket for live prices"
+      },
+      "binance_public": {
+        "url": "https://api.binance.com/api/v3",
+        "api_key": "None (public endpoints)",
+        "rate_limit": "1200 requests/minute",
+        "endpoints": {
+          "ticker_24hr": "/ticker/24hr?symbol={symbol}",
+          "klines": "/klines?symbol={symbol}&interval={interval}",
+          "ticker_price": "/ticker/price"
+        },
+        "use_case": "OHLCV data for charts, 24h statistics"
+      },
+      "blockchain_com": {
+        "url": "https://blockchain.info",
+        "endpoints": {
+          "stats": "/stats",
+          "pools": "/pools?timespan=5days",
+          "charts": "/charts/{chart-type}?timespan=1year&format=json"
+        },
+        "use_case": "Bitcoin on-chain metrics"
+      },
+      "alternative_me": {
+        "url": "https://api.alternative.me/fng",
+        "endpoint": "/?limit=30",
+        "use_case": "Crypto Fear & Greed Index"
+      }
+    },
+    "news": {
+      "rss_feeds": {
+        "economic_times": "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
+        "moneycontrol": "https://www.moneycontrol.com/rss/MCtopnews.xml",
+        "coindesk": "https://www.coindesk.com/arc/outboundfeeds/rss/",
+        "cointelegraph": "https://cointelegraph.com/rss",
+        "reuters_business": "https://www.reutersagency.com/feed/?taxonomy=best-topics&post_type=best"
+      },
+      "cryptocompare_news": {
+        "url": "https://min-api.cryptocompare.com/data/v2/news/",
+        "api_key": "Get free key",
+        "rate_limit": "100 calls/hour (free)"
+      }
+    },
+    "forex": {
+      "exchangerate_api": {
+        "url": "https://api.exchangerate-api.com/v4/latest/USD",
+        "rate_limit": "1500 requests/month (free)",
+        "currencies": ["USD", "INR", "EUR", "GBP", "JPY", "AUD", "CAD"]
+      },
+      "fixer_io": {
+        "url": "https://api.fixer.io/latest",
+        "note": "Backup option, limited free tier"
+      }
+    },
+    "additional": {
+      "ipapi": {
+        "url": "https://ipapi.co/json/",
+        "use_case": "Get user location for timezone/currency"
+      }
+    }
+  },
+
+  "project_structure": {
+    "root": {
+      "description": "Next.js 14 App Router structure",
+      "folders": {
+        "/app": {
+          "description": "Next.js App Router pages",
+          "files": {
+            "layout.tsx": "Root layout with providers",
+            "page.tsx": "Home page with dashboard",
+            "globals.css": "Global styles + Tailwind imports"
+          },
+          "folders": {
+            "/dashboard": "Main dashboard page",
+            "/stocks": "Stock details pages",
+            "/crypto": "Crypto details pages",
+            "/news": "News aggregator page",
+            "/tools": {
+              "description": "All 10 tools as separate pages",
+              "pages": [
+                "options-calculator",
+                "position-size-calculator",
+                "pivot-point-calculator",
+                "sip-calculator",
+                "currency-converter",
+                "stock-screener",
+                "portfolio-tracker",
+                "correlation-matrix",
+                "fibonacci-calculator",
+                "tax-calculator"
+              ]
+            },
+            "/api": {
+              "description": "Serverless API routes",
+              "routes": [
+                "/nse-proxy/route.ts",
+                "/crypto-prices/route.ts",
+                "/news-feed/route.ts",
+                "/stock-quote/route.ts",
+                "/forex-rates/route.ts"
+              ]
+            }
+          }
+        },
+        "/components": {
+          "description": "Reusable React components",
+          "folders": {
+            "/ui": "shadcn/ui components",
+            "/charts": "Chart components (Lightweight Charts wrappers)",
+            "/three": "Three.js components (3D visualizations)",
+            "/dashboard": "Dashboard specific components",
+            "/tools": "Tool components",
+            "/layout": "Layout components (Header, Footer, Sidebar)",
+            "/common": "Common components (LoadingSpinner, ErrorBoundary)"
+          }
+        },
+        "/lib": {
+          "description": "Utility functions and configurations",
+          "files": {
+            "api-client.ts": "Centralized API calling functions",
+            "calculations.ts": "All calculator logic",
+            "constants.ts": "App constants",
+            "formatters.ts": "Number, date, currency formatters",
+            "validators.ts": "Zod schemas for validation",
+            "db.ts": "IndexedDB setup with Dexie.js",
+            "three-utils.ts": "Three.js helper functions"
+          }
+        },
+        "/stores": {
+          "description": "Zustand state stores",
+          "files": {
+            "useWatchlistStore.ts": "Watchlist state",
+            "usePortfolioStore.ts": "Portfolio state",
+            "useThemeStore.ts": "Theme preferences",
+            "useUserStore.ts": "User preferences"
+          }
+        },
+        "/hooks": {
+          "description": "Custom React hooks",
+          "files": {
+            "useStockPrice.ts": "Fetch stock prices",
+            "useCryptoPrice.ts": "Fetch crypto prices",
+            "useNews.ts": "Fetch news feed",
+            "useWebSocket.ts": "WebSocket connection",
+            "useLocalStorage.ts": "localStorage wrapper"
+          }
+        },
+        "/types": {
+          "description": "TypeScript type definitions",
+          "files": {
+            "api.ts": "API response types",
+            "stock.ts": "Stock related types",
+            "crypto.ts": "Crypto related types",
+            "news.ts": "News types",
+            "tools.ts": "Calculator types"
+          }
+        },
+        "/public": {
+          "description": "Static assets",
+          "folders": {
+            "/images": "Images and logos",
+            "/icons": "Favicon and app icons",
+            "/models": "3D models for Three.js (if needed)"
+          }
+        }
+      }
+    }
+  },
+
+  "website_architecture": {
+    "rendering_strategy": {
+      "homepage": "Server-Side Rendering (SSR) for SEO",
+      "dashboard": "Client-Side Rendering (CSR) with React Query",
+      "tools": "Static Generation (SSG) where possible",
+      "api_routes": "Edge Functions for low latency"
+    },
+    "data_flow": {
+      "client_request": "User interacts with UI",
+      "react_query": "TanStack Query manages cache and fetching",
+      "api_route": "Next.js API route proxies to external APIs",
+      "external_api": "Free API returns data",
+      "cache": "Response cached in Vercel Edge Config (10s-5min)",
+      "ui_update": "UI updates with fresh data"
+    },
+    "caching_strategy": {
+      "stock_prices": "Cache for 10 seconds (near real-time)",
+      "crypto_prices": "Cache for 30 seconds",
+      "news": "Cache for 15 minutes",
+      "historical_data": "Cache for 1 hour",
+      "forex_rates": "Cache for 1 hour",
+      "static_data": "Cache indefinitely until rebuild"
+    },
+    "performance_optimizations": {
+      "code_splitting": "Dynamic imports for heavy components",
+      "lazy_loading": "Lazy load images and charts",
+      "prefetching": "Prefetch critical API routes",
+      "compression": "Gzip/Brotli enabled on Vercel",
+      "cdn": "Static assets served via Vercel Edge Network",
+      "image_optimization": "Next.js Image component for auto-optimization"
+    },
+    "three_js_integration": {
+      "use_cases": [
+        "3D animated hero section (globe showing markets)",
+        "3D data visualization (portfolio composition)",
+        "Interactive 3D charts (optional)",
+        "Background particles/effects"
+      ],
+      "implementation": "React Three Fiber with lazy loading",
+      "performance": "Use Drei helpers, optimize geometries, use instancing"
+    }
+  },
+
+  "responsive_ui_design": {
+    "breakpoints": {
+      "mobile": "320px - 640px (sm)",
+      "tablet": "641px - 1024px (md, lg)",
+      "desktop": "1025px - 1536px (xl)",
+      "large_desktop": "1537px+ (2xl)"
+    },
+    "layout_approach": {
+      "strategy": "Mobile-first responsive design",
+      "grid_system": "TailwindCSS Grid + Flexbox",
+      "mobile": {
+        "navigation": "Bottom tab bar + hamburger menu",
+        "dashboard": "Single column, stacked cards",
+        "charts": "Full-width, swipeable",
+        "tools": "Accordion layout for inputs/outputs"
+      },
+      "tablet": {
+        "navigation": "Side drawer + top bar",
+        "dashboard": "2-column grid",
+        "charts": "Side-by-side comparison enabled",
+        "tools": "Split view (inputs left, results right)"
+      },
+      "desktop": {
+        "navigation": "Persistent sidebar + top bar",
+        "dashboard": "3-4 column grid with widgets",
+        "charts": "Multi-chart layout with tabs",
+        "tools": "Wide layout with live preview"
+      }
+    },
+    "component_responsiveness": {
+      "header": {
+        "mobile": "Compact logo + hamburger",
+        "tablet": "Logo + primary nav + search",
+        "desktop": "Full nav + search + user menu + theme toggle"
+      },
+      "price_cards": {
+        "mobile": "Stacked, swipeable carousel",
+        "tablet": "2x2 grid",
+        "desktop": "4-6 cards in row, scrollable"
+      },
+      "charts": {
+        "mobile": "Full width, height: 300px, minimal UI",
+        "tablet": "Height: 400px, more controls",
+        "desktop": "Height: 500px+, full controls, multi-pane"
+      },
+      "news_feed": {
+        "mobile": "Card stack, image top",
+        "tablet": "2-column masonry",
+        "desktop": "3-column with sidebar filters"
+      },
+      "tools": {
+        "mobile": "Vertical stack, collapsible sections",
+        "tablet": "Side-by-side input/output",
+        "desktop": "Wide form with live charts/results"
+      }
+    },
+    "touch_optimization": {
+      "mobile": {
+        "button_size": "Minimum 44x44px (iOS guidelines)",
+        "spacing": "Minimum 8px between interactive elements",
+        "gestures": "Swipe for navigation, pull-to-refresh",
+        "feedback": "Haptic feedback on interactions (where supported)"
+      }
+    },
+    "accessibility": {
+      "wcag_level": "AA compliance target",
+      "features": [
+        "Keyboard navigation support",
+        "Screen reader friendly (ARIA labels)",
+        "High contrast mode support",
+        "Focus indicators on all interactive elements",
+        "Skip to main content link",
+        "Alt text for all images"
+      ]
+    }
+  },
+
+  "ui_ux_design": {
+    "design_system": {
+      "color_palette": {
+        "light_mode": {
+          "primary": "#3B82F6 (Blue 500)",
+          "secondary": "#10B981 (Green 500)",
+          "accent": "#F59E0B (Amber 500)",
+          "success": "#22C55E (Green 500)",
+          "danger": "#EF4444 (Red 500)",
+          "warning": "#F59E0B (Amber 500)",
+          "background": "#FFFFFF",
+          "surface": "#F9FAFB (Gray 50)",
+          "text_primary": "#111827 (Gray 900)",
+          "text_secondary": "#6B7280 (Gray 500)",
+          "border": "#E5E7EB (Gray 200)"
+        },
+        "dark_mode": {
+          "primary": "#60A5FA (Blue 400)",
+          "secondary": "#34D399 (Green 400)",
+          "accent": "#FBBF24 (Amber 400)",
+          "success": "#4ADE80 (Green 400)",
+          "danger": "#F87171 (Red 400)",
+          "warning": "#FBBF24 (Amber 400)",
+          "background": "#0F172A (Slate 900)",
+          "surface": "#1E293B (Slate 800)",
+          "text_primary": "#F1F5F9 (Slate 100)",
+          "text_secondary": "#94A3B8 (Slate 400)",
+          "border": "#334155 (Slate 700)"
+        },
+        "semantic_colors": {
+          "bullish": "#22C55E (Green)",
+          "bearish": "#EF4444 (Red)",
+          "neutral": "#6B7280 (Gray)"
+        }
+      },
+      "typography": {
+        "font_family": {
+          "sans": "Inter, system-ui, sans-serif",
+          "mono": "JetBrains Mono, Consolas, monospace",
+          "display": "Cal Sans (optional for headings)"
+        },
+        "font_sizes": {
+          "xs": "0.75rem (12px)",
+          "sm": "0.875rem (14px)",
+          "base": "1rem (16px)",
+          "lg": "1.125rem (18px)",
+          "xl": "1.25rem (20px)",
+          "2xl": "1.5rem (24px)",
+          "3xl": "1.875rem (30px)",
+          "4xl": "2.25rem (36px)",
+          "5xl": "3rem (48px)"
+        },
+        "font_weights": {
+          "normal": "400",
+          "medium": "500",
+          "semibold": "600",
+          "bold": "700"
+        }
+      },
+      "spacing": {
+        "scale": "4px base unit (Tailwind default)",
+        "common_values": ["4px", "8px", "12px", "16px", "24px", "32px", "48px", "64px"]
+      },
+      "border_radius": {
+        "sm": "0.25rem (4px)",
+        "md": "0.375rem (6px)",
+        "lg": "0.5rem (8px)",
+        "xl": "0.75rem (12px)",
+        "2xl": "1rem (16px)",
+        "full": "9999px (pills)"
+      },
+      "shadows": {
+        "sm": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        "md": "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+        "lg": "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+        "xl": "0 20px 25px -5px rgb(0 0 0 / 0.1)"
+      }
+    },
+    "layout_principles": {
+      "grid_system": "12-column grid (Tailwind)",
+      "whitespace": "Generous spacing for readability",
+      "hierarchy": "Clear visual hierarchy with size, weight, color",
+      "consistency": "Consistent spacing, sizing, and patterns",
+      "alignment": "Left-aligned text, centered headings where appropriate"
+    },
+    "component_design": {
+      "buttons": {
+        "variants": ["primary", "secondary", "outline", "ghost", "danger"],
+        "sizes": ["sm (32px)", "md (40px)", "lg (48px)"],
+        "states": ["default", "hover", "active", "disabled", "loading"],
+        "examples": {
+          "primary": "Solid background, white text",
+          "secondary": "Lighter background, colored text",
+          "outline": "Transparent bg, colored border and text"
+        }
+      },
+      "cards": {
+        "style": "Rounded corners, subtle shadow, hover lift effect",
+        "padding": "p-4 md:p-6",
+        "variants": ["default", "interactive (hover effect)", "highlighted"],
+        "use_cases": ["Price cards", "News articles", "Tool containers", "Portfolio items"]
+      },
+      "inputs": {
+        "style": "Rounded, bordered, focus ring",
+        "types": ["text", "number", "select", "date", "search"],
+        "states": ["default", "focus", "error", "disabled"],
+        "validation": "Real-time with Zod, error messages below input"
+      },
+      "navigation": {
+        "desktop": {
+          "type": "Vertical sidebar (collapsible)",
+          "width": "280px expanded, 64px collapsed",
+          "items": "Icon + text, active indicator",
+          "sections": ["Markets", "Tools", "News", "Settings"]
+        },
+        "mobile": {
+          "type": "Bottom tab bar",
+          "items": "4-5 primary actions with icons",
+          "overflow": "Hamburger menu for additional items"
+        }
+      },
+      "modals_dialogs": {
+        "overlay": "Semi-transparent backdrop (backdrop-blur)",
+        "animation": "Fade in + scale up",
+        "close": "X button + click outside + Esc key",
+        "max_width": "600px for forms, full-width for media"
+      },
+      "tooltips": {
+        "trigger": "Hover (desktop), tap (mobile)",
+        "position": "Auto-adjust based on viewport",
+        "style": "Dark background, white text, small arrow"
+      },
+      "badges_tags": {
+        "use_cases": ["Stock changes", "Categories", "Status indicators"],
+        "style": "Rounded-full, small text, colored background",
+        "variants": ["success", "danger", "warning", "info", "neutral"]
+      }
+    },
+    "data_visualization": {
+      "price_changes": {
+        "positive": "Green color + up arrow",
+        "negative": "Red color + down arrow",
+        "format": "+2.5% or -1.3%"
+      },
+      "charts": {
+        "candlestick": {
+          "bullish": "Green candles",
+          "bearish": "Red candles",
+          "wick": "Thin line showing high/low"
+        },
+        "line_chart": {
+          "line_color": "Dynamic based on trend",
+          "area_fill": "Gradient from line color to transparent",
+          "grid": "Subtle gray lines"
+        },
+        "indicators": {
+          "style": "Overlaid or separate panes",
+          "colors": "Distinct colors for each indicator",
+          "legend": "Top-right corner, collapsible"
+        }
+      },
+      "tables": {
+        "header": "Sticky header with sort indicators",
+        "rows": "Alternating row colors (optional), hover highlight",
+        "responsive": "Horizontal scroll on mobile, card view for complex data",
+        "pagination": "Load more or numbered pages"
+      }
+    },
+    "animations": {
+      "principle": "Smooth, purposeful, fast (< 300ms)",
+      "page_transitions": "Fade in content (100ms)",
+      "hover_effects": "Scale up cards (1.02), lift shadow",
+      "loading": "Skeleton screens, spinner for async actions",
+      "micro_interactions": [
+        "Button press (scale down 0.98)",
+        "Toggle switches (slide animation)",
+        "Number changes (count up/down)",
+        "Chart updates (smooth transitions)"
+      ],
+      "three_js_animations": {
+        "hero_globe": "Slow rotation, responsive to mouse",
+        "particles": "Subtle floating effect",
+        "data_viz": "Animated transitions between states"
+      }
+    },
+    "user_flows": {
+      "first_time_user": [
+        "Land on homepage with hero + feature highlights",
+        "Browse live prices (no signup needed)",
+        "Try a calculator tool",
+        "Optional: Create account to save watchlist",
+        "Customize dashboard"
+      ],
+      "returning_user": [
+        "Auto-load saved watchlist",
+        "Check price alerts",
+        "Read latest news",
+        "Use tools",
+        "Update portfolio"
+      ],
+      "power_user": [
+        "Multiple watchlists",
+        "Custom dashboard layouts",
+        "Advanced tool usage",
+        "Export data",
+        "Set complex alerts"
+      ]
+    },
+    "feedback_mechanisms": {
+      "success": "Green toast notification (top-right)",
+      "error": "Red toast with retry option",
+      "loading": "Skeleton screens, progress bars",
+      "empty_states": "Friendly message + CTA",
+      "confirmation": "Modal dialog before destructive actions"
+    }
+  },
+
+  "tools_specification": {
+    "tool_1_options_calculator": {
+      "name": "Options Profit/Loss Calculator",
+      "description": "Calculate P&L for Nifty and Bank Nifty options strategies",
+      "inputs": {
+        "option_type": "Call or Put",
+        "strategy_type": ["Single", "Straddle", "Strangle", "Spread", "Iron Condor"],
+        "strike_price": "Number",
+        "premium_paid": "Number",
+        "spot_price": "Number (current)",
+        "quantity": "Number (lots)",
+        "expiry": "Date"
+      },
+      "calculations": {
+        "breakeven": "(strike ± premium) based on type",
+        "max_profit": "Strategy dependent",
+        "max_loss": "Strategy dependent",
+        "current_pl": "Based on current spot price"
+      },
+      "outputs": {
+        "pnl_chart": "Interactive chart showing P&L across price range",
+        "metrics_table": "Breakeven, max profit/loss, ROI",
+        "greeks": "Delta, Gamma, Theta, Vega (optional)"
+      },
+      "visualization": "Line chart with breakeven points marked"
+    },
+    "tool_2_position_size_calculator": {
+      "name": "Position Size Calculator",
+      "description": "Calculate optimal position size based on risk management",
+      "inputs": {
+        "account_size": "Total capital (INR/USD)",
+        "risk_percentage": "% of capital to risk (1-5%)",
+        "entry_price": "Entry point",
+        "stop_loss": "Stop loss price",
+        "asset_type": "Stock or Crypto"
+      },
+      "calculations": {
+        "risk_amount": "account_size × risk_percentage",
+        "price_difference": "entry_price - stop_loss",
+        "position_size": "risk_amount / price_difference",
+        "total_investment": "position_size × entry_price"
+      },
+      "outputs": {
+        "shares_to_buy": "Calculated quantity",
+        "total_investment": "Total capital needed",
+        "risk_reward_ratio": "Visual indicator",
+        "position_summary": "Table with all details"
+      }
+    },
+    "tool_3_pivot_point_calculator": {
+      "name": "Pivot Point Calculator",
+      "description": "Calculate support and resistance levels for day trading",
+      "inputs": {
+        "high": "Previous day/week/month high",
+        "low": "Previous day/week/month low",
+        "close": "Previous close",
+        "method": "Standard, Fibonacci, Camarilla, Woodie"
+      },
+      "calculations": {
+        "pivot": "(High + Low + Close) / 3",
+        "resistance_levels": "R1, R2, R3",
+        "support_levels": "S1, S2, S3",
+        "method_specific": "Different formulas for each method"
+      },
+      "outputs": {
+        "levels_table": "All support/resistance levels",
+        "current_price_indicator": "Where current price sits",
+        "visualization": "Horizontal lines on mini chart"
+      }
+    },
+    "tool_4_sip_calculator": {
+      "name": "SIP Calculator (Mutual Fund)",
+      "description": "Calculate returns for systematic investment plans",
+      "inputs": {
+        "monthly_investment": "Amount (INR)",
+        "investment_period": "Years",
+        "expected_return": "Annual return % (8-15%)",
+        "step_up": "Optional yearly increase %"
+      },
+      "calculations": {
+        "future_value": "FV = P × [((1 + r)^n - 1) / r] × (1 + r)",
+        "total_invested": "monthly_investment × months",
+        "wealth_gained": "future_value - total_invested"
+      },
+      "outputs": {
+        "maturity_amount": "Final corpus",
+        "total_investment": "Sum of all investments",
+        "wealth_generated": "Profit",
+        "year_wise_breakdown": "Table showing yearly growth",
+        "chart": "Bar chart comparing invested vs returns"
+      }
+    },
+    "tool_5_currency_converter": {
+      "name": "Multi-Currency Converter",
+      "description": "Real-time currency conversion with live rates",
+      "inputs": {
+        "amount": "Number",
+        "from_currency": "Dropdown (USD, INR, EUR, GBP, etc.)",
+        "to_currency": "Dropdown",
+        "live_update": "Toggle for auto-refresh"
+      },
+      "api": "ExchangeRate-API",
+      "calculations": {
+        "converted_amount": "amount × exchange_rate"
+      },
+      "outputs": {
+        "converted_value": "Large, prominent display",
+        "exchange_rate": "Current rate with timestamp",
+        "historical_chart": "Rate over last 30 days (optional)",
+        "popular_conversions": "Quick access buttons"
+      },
+      "features": [
+        "Swap currencies button",
+        "Save favorite pairs",
+        "Comparison with multiple currencies"
+      ]
+    },
+    "tool_6_stock_screener": {
+      "name": "Stock & Crypto Screener",
+      "description": "Filter and screen assets based on criteria",
+      "data_source": {
+        "stocks": "Yahoo Finance (top NSE/NYSE stocks)",
+        "crypto": "CoinGecko (top 100 coins)"
+      },
+      "filters": {
+        "price_range": "Min-Max",
+        "market_cap": "Categories (Small, Mid, Large)",
+        "volume": "Minimum 24h volume",
+        "change_24h": "% change filter",
+        "technical": {
+          "rsi": "Overbought (>70), Oversold (<30)",
+          "ma_cross": "Price above/below MA"
+        }
+      },
+      "calculations": {
+        "client_side": "Filter cached data in browser",
+        "indicators": "Calculate RSI, MA using technical libraries"
+      },
+      "outputs": {
+        "results_table": "Sortable, filterable table",
+        "count": "X assets match criteria",
+        "export": "CSV download",
+        "save_screen": "Save filter combinations"
+      }
+    },
+    "tool_7_portfolio_tracker": {
+      "name": "Portfolio Tracker",
+      "description": "Track stocks and crypto holdings with P&L",
+      "storage": "IndexedDB (local) or Supabase (cloud)",
+      "inputs": {
+        "add_holding": {
+          "symbol": "Ticker or coin ID",
+          "quantity": "Number of shares/coins",
+          "avg_price": "Purchase price",
+          "purchase_date": "Date"
+        }
+      },
+      "calculations": {
+        "current_value": "quantity × current_price",
+        "invested_value": "quantity × avg_price",
+        "pnl": "current_value - invested_value",
+        "pnl_percentage": "(pnl / invested_value) × 100",
+        "total_portfolio_value": "Sum of all holdings"
+      },
+      "outputs": {
+        "portfolio_summary": "Total value, P&L, % change",
+        "holdings_table": "List all assets with individual P&L",
+        "allocation_chart": "Pie chart showing portfolio distribution",
+        "performance_chart": "Line chart of portfolio value over time",
+        "export": "CSV/PDF report"
+      },
+      "features": [
+        "Multiple portfolios",
+        "Transaction history",
+        "Dividend tracking",
+        "Tax lot tracking"
+      ]
+    },
+    "tool_8_correlation_matrix": {
+      "name": "Asset Correlation Matrix",
+      "description": "Visualize correlation between multiple assets",
+      "inputs": {
+        "assets": "Select 3-10 stocks/cryptos",
+        "timeframe": "30d, 90d, 1y",
+        "data_source": "Historical prices from APIs"
+      },
+      "calculations": {
+        "correlation_coefficient": "Pearson correlation (-1 to +1)",
+        "formula": "ρ(X,Y) = cov(X,Y) / (σX × σY)"
+      },
+      "outputs": {
+        "heatmap": "Color-coded matrix (red = negative, green = positive)",
+        "correlation_table": "Numerical values",
+        "interpretation": "Text guide for understanding correlations"
+      },
+      "visualization": "Heatmap using Chart.js or Recharts",
+      "use_cases": [
+        "Diversification analysis",
+        "Identify hedging opportunities",
+        "Portfolio risk assessment"
+      ]
+    },
+    "tool_9_fibonacci_calculator": {
+      "name": "Fibonacci Retracement Calculator",
+      "description": "Calculate Fibonacci levels for technical analysis",
+      "inputs": {
+        "trend": "Uptrend or Downtrend",
+        "high": "Swing high price",
+        "low": "Swing low price"
+      },
+      "calculations": {
+        "difference": "high - low",
+        "levels": {
+          "0%": "low (downtrend) or high (uptrend)",
+          "23.6%": "low + (difference × 0.236)",
+          "38.2%": "low + (difference × 0.382)",
+          "50%": "low + (difference × 0.5)",
+          "61.8%": "low + (difference × 0.618)",
+          "78.6%": "low + (difference × 0.786)",
+          "100%": "high (downtrend) or low (uptrend)"
+        },
+        "extensions": {
+          "127.2%": "high + (difference × 0.272)",
+          "161.8%": "high + (difference × 0.618)",
+          "261.8%": "high + (difference × 1.618)"
+        }
+      },
+      "outputs": {
+        "levels_table": "All Fibonacci levels with prices",
+        "visualization": "Mini chart with horizontal lines",
+        "current_price_position": "Highlight nearest level",
+        "interpretation": "Support/resistance guidance"
+      }
+    },
+    "tool_10_tax_calculator": {
+      "name": "Capital Gains Tax Calculator (India)",
+      "description": "Calculate tax liability for stock and crypto trading",
+      "regions": "India (can add US, UK later)",
+      "asset_types": {
+        "equity": {
+          "stcg": "< 1 year holding = 15% tax",
+          "ltcg": "> 1 year holding = 10% on gains > ₹1 lakh"
+        },
+        "crypto": {
+          "current_rule": "30% flat tax + 1% TDS on transfers",
+          "no_deduction": "No deduction for losses"
+        }
+      },
+      "inputs": {
+        "asset_type": "Equity or Crypto",
+        "purchase_price": "Buy price",
+        "sale_price": "Sell price",
+        "quantity": "Number of units",
+        "holding_period": "Days held",
+        "financial_year": "FY selection"
+      },
+      "calculations": {
+        "capital_gain": "(sale_price - purchase_price) × quantity",
+        "holding_type": "STCG or LTCG based on period",
+        "tax_rate": "Based on asset type and holding period",
+        "tax_liability": "capital_gain × tax_rate",
+        "tds": "For crypto: sale_price × 0.01"
+      },
+      "outputs": {
+        "summary_card": "Total gain, tax type, tax amount",
+        "breakdown_table": "Detailed calculation steps",
+        "net_profit": "Profit after tax",
+        "tips": "Tax-saving suggestions",
+        "disclaimer": "Consult CA for accuracy"
+      }
+    }
+  },
+
+  "three_js_features": {
+    "hero_section": {
+      "component": "Globe3D",
+      "description": "Rotating 3D globe with market indicators",
+      "implementation": {
+        "library": "React Three Fiber + Drei",
+        "geometry": "SphereGeometry",
+        "texture": "Earth texture map (low poly for performance)",
+        "points": "Major stock exchanges as glowing points",
+        "animation": "Slow auto-rotation, mouse interaction"
+      },
+      "performance": {
+        "lazy_load": "true",
+        "pixel_ratio": "Math.min(window.devicePixelRatio, 2)",
+        "fallback": "2D animated SVG for low-end devices"
+      }
+    },
+    "portfolio_visualization": {
+      "component": "Portfolio3DPie",
+      "description": "3D pie chart for portfolio allocation",
+      "implementation": {
+        "type": "Extruded pie chart with hover effects",
+        "interaction": "Click to expand segment, show details",
+        "colors": "Matched to UI color scheme"
+      },
+      "when_to_show": "Optional enhancement in portfolio tracker"
+    },
+    "background_effects": {
+      "component": "ParticleField",
+      "description": "Subtle animated particles in background",
+      "implementation": {
+        "count": "50-100 particles (performance-dependent)",
+        "movement": "Slow float with Perlin noise",
+        "color": "Theme-aware (changes with dark/light mode)",
+        "opacity": "0.1-0.3 for subtlety"
+      },
+      "pages": ["Homepage", "Dashboard (optional)"]
+    },
+    "data_connections": {
+      "component": "NetworkGraph3D",
+      "description": "3D network showing asset correlations",
+      "implementation": {
+        "nodes": "Assets as spheres",
+        "edges": "Lines showing correlation strength",
+        "interaction": "Orbit controls, click to highlight",
+        "layout": "Force-directed graph in 3D space"
+      },
+      "use_case": "Advanced visualization in correlation tool"
+    },
+    "performance_guidelines": {
+      "mobile": "Disable Three.js or use minimal effects",
+      "tablet": "Simplified 3D with lower poly count",
+      "desktop": "Full experience with all effects",
+      "detection": "Use matchMedia or resize observer",
+      "gpu_check": "Check WebGL support, fallback to 2D"
+    }
+  },
+
+  "development_workflow": {
+    "setup_steps": [
+      "1. Clone repository or create Next.js app: npx create-next-app@latest zeromarket --typescript --tailwind --app",
+      "2. Install dependencies (see package.json below)",
+      "3. Setup environment variables (.env.local)",
+      "4. Configure Tailwind + shadcn/ui",
+      "5. Setup IndexedDB with Dexie.js",
+      "6. Create folder structure as per project_structure",
+      "7. Implement API routes in /app/api",
+      "8. Build components incrementally",
+      "9. Test responsive design on multiple devices",
+      "10. Deploy to Vercel"
+    ],
+    "recommended_dependencies": {
+      "dependencies": {
+        "next": "14.x",
+        "react": "18.x",
+        "react-dom": "18.x",
+        "typescript": "5.x",
+        "@tanstack/react-query": "^5.x",
+        "zustand": "^4.x",
+        "dexie": "^3.x",
+        "dexie-react-hooks": "^1.x",
+        "@supabase/supabase-js": "^2.x (optional)",
+        "yahoo-finance2": "^2.x",
+        "lightweight-charts": "^4.x",
+        "recharts": "^2.x",
+        "chart.js": "^4.x",
+        "react-chartjs-2": "^5.x",
+        "@react-three/fiber": "^8.x",
+        "@react-three/drei": "^9.x",
+        "three": "^0.160.x",
+        "framer-motion": "^11.x",
+        "lucide-react": "latest",
+        "react-hook-form": "^7.x",
+        "zod": "^3.x",
+        "@hookform/resolvers": "^3.x",
+        "date-fns": "^3.x",
+        "numeral": "^2.x",
+        "lodash": "^4.x",
+        "rss-parser": "^3.x",
+        "tailwindcss": "^3.x",
+        "@radix-ui/react-*": "latest (for shadcn/ui components)"
+      },
+      "devDependencies": {
+        "@types/node": "latest",
+        "@types/react": "latest",
+        "@types/react-dom": "latest",
+        "@types/numeral": "latest",
+        "@types/lodash": "latest",
+        "eslint": "^8.x",
+        "eslint-config-next": "14.x",
+        "prettier": "^3.x",
+        "prettier-plugin-tailwindcss": "latest"
+      }
+    },
+    "environment_variables": {
+      "NEXT_PUBLIC_COINGECKO_API_KEY": "Optional for pro tier",
+      "NEXT_PUBLIC_ALPHA_VANTAGE_KEY": "Get from alphavantage.co",
+      "NEXT_PUBLIC_CRYPTOCOMPARE_KEY": "Get from cryptocompare.com",
+      "NEXT_PUBLIC_SUPABASE_URL": "Optional for cloud sync",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "Optional for cloud sync"
+    },
+    "git_workflow": {
+      "branches": ["main", "develop", "feature/*", "hotfix/*"],
+      "commit_convention": "Conventional Commits (feat:, fix:, docs:, etc.)",
+      "ci_cd": "GitHub Actions for automated testing and deployment"
+    }
+  },
+
+  "deployment_checklist": {
+    "pre_deployment": [
+      "✓ Test all tools and calculators",
+      "✓ Verify API routes and error handling",
+      "✓ Check responsive design on all breakpoints",
+      "✓ Test dark/light mode switching",
+      "✓ Optimize images (use Next.js Image component)",
+      "✓ Add meta tags for SEO",
+      "✓ Setup analytics (Vercel Analytics or Plausible)",
+      "✓ Test Three.js performance on various devices",
+      "✓ Add error boundaries",
+      "✓ Test accessibility (keyboard nav, screen readers)"
+    ],
+    "vercel_deployment": [
+      "1. Push code to GitHub",
+      "2. Import project in Vercel dashboard",
+      "3. Add environment variables",
+      "4. Deploy (automatic)",
+      "5. Setup custom domain (optional)",
+      "6. Enable Vercel Analytics",
+      "7. Configure Edge Config for caching (optional)",
+      "8. Setup Cron Jobs for alerts (optional)"
+    ],
+    "post_deployment": [
+      "✓ Monitor performance (Core Web Vitals)",
+      "✓ Check API rate limits usage",
+      "✓ Setup error monitoring (Sentry or similar)",
+      "✓ Collect user feedback",
+      "✓ Iterate and improve"
+    ]
+  },
+
+  "seo_optimization": {
+    "meta_tags": {
+      "title": "ZeroMarket - Live Stock Prices, Crypto Analysis & Trading Tools",
+      "description": "Free real-time stock market data, cryptocurrency prices, finance news, and professional trading calculators. Track Nifty, Bank Nifty, Bitcoin, Ethereum and more.",
+      "keywords": "stock market, live prices, crypto, nifty, bank nifty, trading tools, portfolio tracker, options calculator"
+    },
+    "structured_data": {
+      "organization": "Schema.org Organization markup",
+      "website": "Schema.org WebSite markup with search action",
+      "breadcrumbs": "BreadcrumbList for navigation"
+    },
+    "open_graph": {
+      "og:title": "ZeroMarket - Your Market Intelligence Platform",
+      "og:description": "Track markets, analyze trends, use professional tools",
+      "og:image": "URL to social share image (1200x630)",
+      "og:type": "website"
+    },
+    "performance": {
+      "target_scores": {
+        "lighthouse_performance": "> 90",
+        "lighthouse_accessibility": "> 95",
+        "lighthouse_seo": "> 95"
+      }
+    }
+  },
+
+  "future_enhancements": {
+    "phase_2": [
+      "User authentication with Supabase",
+      "Cloud sync for watchlists and portfolios",
+      "Email/SMS price alerts",
+      "Advanced charting with more indicators",
+      "Backtesting tool for strategies",
+      "Social features (share trades, ideas)",
+      "Mobile app (React Native or PWA)"
+    ],
+    "phase_3": [
+      "AI-powered trade signals",
+      "Sentiment analysis on news",
+      "Automated trading (via broker APIs)",
+      "Premium subscription tier",
+      "White-label solution for brokers",
+      "API for developers"
+    ]
+  },
+
+  "success_metrics": {
+    "launch_targets": {
+      "users_month_1": "1,000",
+      "users_month_3": "10,000",
+      "daily_active_users": "> 20% of total users",
+      "avg_session_duration": "> 3 minutes",
+      "bounce_rate": "< 40%",
+      "page_load_time": "< 2 seconds"
+    },
+    "engagement": {
+      "tools_usage": "> 50% of users try at least one tool",
+      "watchlist_creation": "> 30% create watchlist",
+      "return_rate": "> 40% return within 7 days"
+    }
+  },
+
+  "branding": {
+    "name": "ZeroMarket",
+    "tagline": "Zero Complexity, Maximum Insight",
+    "alternative_taglines": [
+      "Trade Smarter, Not Harder",
+      "Your Personal Market Intelligence",
+      "Markets Made Simple"
+    ],
+    "logo_concept": "Stylized 'Z' with upward trend arrow integrated",
+    "brand_voice": "Professional yet approachable, data-driven, empowering",
+    "target_audience": [
+      "Retail traders (beginner to intermediate)",
+      "Long-term investors",
+      "Crypto enthusiasts",
+      "Students learning finance",
+      "Professionals tracking markets"
+    ]
+  },
+
+  "legal_compliance": {
+    "disclaimers": [
+      "Investment disclaimer: Not financial advice",
+      "Data accuracy: Real-time data subject to delays",
+      "Risk warning: Trading involves substantial risk"
+    ],
+    "privacy": "Privacy policy for user data (if collecting)",
+    "terms_of_service": "Standard ToS for web applications",
+    "cookie_policy": "GDPR-compliant cookie consent"
+  },
+
+  "documentation_links": {
+    "next_js": "https://nextjs.org/docs",
+    "tailwind_css": "https://tailwindcss.com/docs",
+    "shadcn_ui": "https://ui.shadcn.com/docs",
+    "three_js": "https://threejs.org/docs",
+    "react_three_fiber": "https://docs.pmnd.rs/react-three-fiber",
+    "lightweight_charts": "https://tradingview.github.io/lightweight-charts/",
+    "react_query": "https://tanstack.com/query/latest/docs/react",
+    "zustand": "https://docs.pmnd.rs/zustand",
+    "dexie": "https://dexie.org/docs/",
+    "vercel": "https://vercel.com/docs"
+  }
+}
