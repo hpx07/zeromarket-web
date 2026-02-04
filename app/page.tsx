@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { ArrowRight, TrendingUp, Calculator, Newspaper, PieChart } from "lucide-react"
+import { TickerTape } from "@/components/ticker-tape"
 
 export default function Home() {
   return (
@@ -32,6 +33,13 @@ export default function Home() {
               </Link>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Market Ticker */}
+      <section className="py-4 bg-white dark:bg-slate-800 border-y border-gray-200 dark:border-slate-700">
+        <div className="container mx-auto max-w-7xl">
+          <TickerTape />
         </div>
       </section>
 
