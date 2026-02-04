@@ -16,24 +16,44 @@ export function CustomTicker() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('/api/market-data')
-      const data = await response.json()
-      
-      if (data.indices) {
-        const tickerData: TickerData[] = [
-          {
-            name: 'Nifty 50',
-            price: data.indices.nifty50?.price || 0,
-            change: parseFloat(data.indices.nifty50?.change || '0'),
-            changePercent: parseFloat(data.indices.nifty50?.changePercent || '0'),
-          },
-          {
-            name: 'Bank Nifty',
-            price: data.indices.bankNifty?.price || 0,
-            change: parseFloat(data.indices.bankNifty?.change || '0'),
-            changePercent: parseFloat(data.indices.bankNifty?.changePercent || '0'),
-          },
-        ]
+      // Fetch directly from Yahoo Finance API
+      const indices = [
+        { symbol: '^NSEI', name: 'Nifty 50', key: 'nifty50' },
+        { symbol: '^NSEBANK', name: 'Bank Nifty', key: 'bankNifty' },
+      ]
+
+      const tickerData: TickerData[] = []
+
+      for (const index of indices) {
+        try {
+          const response = await fetch(
+            `https://query1.finance.yahoo.com/v8/finance/chart/${index.symbol}?interval=1d&range=1d`
+          )
+          
+          if (response.ok) {
+            const data = await response.json()
+            const quote = data.chart?.result?.[0]?.meta
+            
+            if (quote) {
+              const currentPrice = quote.regularMarketPrice || 0
+              const previousClose = quote.previousClose || quote.chartPreviousClose || 0
+              const change = currentPrice - previousClose
+              const changePercent = previousClose > 0 ? (change / previousClose) * 100 : 0
+
+              tickerData.push({
+                name: index.name,
+                price: currentPrice,
+                change: change,
+                changePercent: changePercent,
+              })
+            }
+          }
+        } catch (error) {
+          console.error(`Failed to fetch ${index.name}:`, error)
+        }
+      }
+
+      if (tickerData.length > 0) {
         setTickers(tickerData)
       }
       setLoading(false)

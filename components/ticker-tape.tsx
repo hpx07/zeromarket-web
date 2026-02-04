@@ -11,10 +11,44 @@ export function TickerTape() {
   useEffect(() => {
     const fetchIndices = async () => {
       try {
-        const response = await fetch('/api/market-data')
-        const data = await response.json()
-        if (data.indices) {
-          setIndicesData(data.indices)
+        // Fetch directly from Yahoo Finance
+        const indices = [
+          { symbol: '^NSEI', name: 'nifty50' },
+          { symbol: '^NSEBANK', name: 'bankNifty' },
+        ]
+
+        const data: any = {}
+
+        for (const index of indices) {
+          try {
+            const response = await fetch(
+              `https://query1.finance.yahoo.com/v8/finance/chart/${index.symbol}?interval=1d&range=1d`
+            )
+            
+            if (response.ok) {
+              const result = await response.json()
+              const quote = result.chart?.result?.[0]?.meta
+              
+              if (quote) {
+                const currentPrice = quote.regularMarketPrice || 0
+                const previousClose = quote.previousClose || quote.chartPreviousClose || 0
+                const change = currentPrice - previousClose
+                const changePercent = previousClose > 0 ? (change / previousClose) * 100 : 0
+
+                data[index.name] = {
+                  price: currentPrice,
+                  change: change.toFixed(2),
+                  changePercent: changePercent.toFixed(2),
+                }
+              }
+            }
+          } catch (error) {
+            console.error(`Failed to fetch ${index.name}:`, error)
+          }
+        }
+
+        if (Object.keys(data).length > 0) {
+          setIndicesData(data)
         }
       } catch (error) {
         console.error('Failed to fetch indices:', error)

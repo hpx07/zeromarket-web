@@ -19,14 +19,65 @@ export default function CurrencyConverterPage() {
   const fetchRates = async () => {
     setLoading(true)
     try {
-      // Use our API route to avoid CORS issues
-      const response = await fetch(`/api/exchange-rates?from=${fromCurrency}`)
-      const data = await response.json()
-      
-      if (data.rates) {
-        setRates(data.rates)
-        setLastUpdated(new Date())
+      const isCrypto = ['BTC', 'ETH'].includes(fromCurrency)
+      const allRates: Record<string, number> = {}
+
+      if (isCrypto) {
+        // Fetch crypto prices
+        const cryptoId = fromCurrency === 'BTC' ? 'bitcoin' : 'ethereum'
+        const cryptoResponse = await fetch(
+          `https://api.coingecko.com/api/v3/simple/price?ids=${cryptoId}&vs_currencies=usd,eur,gbp,inr,jpy,aud,cad,chf,cny`
+        )
+        
+        const cryptoData = await cryptoResponse.json()
+        
+        allRates['USD'] = cryptoData[cryptoId]?.usd || 0
+        allRates['EUR'] = cryptoData[cryptoId]?.eur || 0
+        allRates['GBP'] = cryptoData[cryptoId]?.gbp || 0
+        allRates['INR'] = cryptoData[cryptoId]?.inr || 0
+        allRates['JPY'] = cryptoData[cryptoId]?.jpy || 0
+        allRates['AUD'] = cryptoData[cryptoId]?.aud || 0
+        allRates['CAD'] = cryptoData[cryptoId]?.cad || 0
+        allRates['CHF'] = cryptoData[cryptoId]?.chf || 0
+        allRates['CNY'] = cryptoData[cryptoId]?.cny || 0
+
+        // Get other crypto
+        const otherCrypto = fromCurrency === 'BTC' ? 'ethereum' : 'bitcoin'
+        const otherResponse = await fetch(
+          `https://api.coingecko.com/api/v3/simple/price?ids=${otherCrypto}&vs_currencies=usd`
+        )
+        const otherData = await otherResponse.json()
+        const otherPrice = otherData[otherCrypto]?.usd || 0
+        
+        if (otherPrice > 0) {
+          allRates[fromCurrency === 'BTC' ? 'ETH' : 'BTC'] = allRates['USD'] / otherPrice
+        }
+        allRates[fromCurrency] = 1
+      } else {
+        // Fetch fiat rates
+        const fiatResponse = await fetch(
+          `https://api.exchangerate-api.com/v4/latest/${fromCurrency}`
+        )
+        const fiatData = await fiatResponse.json()
+        Object.assign(allRates, fiatData.rates || {})
+
+        // Fetch crypto prices
+        const cryptoResponse = await fetch(
+          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd'
+        )
+        const cryptoData = await cryptoResponse.json()
+        
+        const usdRate = fromCurrency === 'USD' ? 1 : (allRates['USD'] || 1)
+        if (cryptoData.bitcoin?.usd) {
+          allRates['BTC'] = usdRate / cryptoData.bitcoin.usd
+        }
+        if (cryptoData.ethereum?.usd) {
+          allRates['ETH'] = usdRate / cryptoData.ethereum.usd
+        }
       }
+
+      setRates(allRates)
+      setLastUpdated(new Date())
     } catch (error) {
       console.error("Failed to fetch rates:", error)
     }

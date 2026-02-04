@@ -29,8 +29,82 @@ export default function DashboardPage() {
   const fetchMarketData = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/market-data')
-      const data = await response.json()
+      // Fetch Indian indices
+      const indices = [
+        { symbol: '^NSEI', name: 'nifty50' },
+        { symbol: '^NSEBANK', name: 'bankNifty' },
+        { symbol: '^BSESN', name: 'sensex' },
+      ]
+
+      const indicesData: any = {}
+
+      for (const index of indices) {
+        try {
+          const response = await fetch(
+            `https://query1.finance.yahoo.com/v8/finance/chart/${index.symbol}?interval=1d&range=1d`
+          )
+          
+          if (response.ok) {
+            const data = await response.json()
+            const quote = data.chart?.result?.[0]?.meta
+            
+            if (quote) {
+              const currentPrice = quote.regularMarketPrice || 0
+              const previousClose = quote.previousClose || quote.chartPreviousClose || 0
+              const change = currentPrice - previousClose
+              const changePercent = previousClose > 0 ? (change / previousClose) * 100 : 0
+
+              indicesData[index.name] = {
+                price: currentPrice,
+                change: change.toFixed(2),
+                changePercent: changePercent.toFixed(2),
+              }
+            }
+          }
+        } catch (error) {
+          console.error(`Failed to fetch ${index.name}:`, error)
+        }
+      }
+
+      // Fetch crypto prices
+      const cryptoResponse = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,binancecoin,cardano,solana&vs_currencies=usd,inr&include_24hr_change=true'
+      )
+
+      const cryptoData = await cryptoResponse.json()
+
+      const data = {
+        indices: indicesData,
+        crypto: {
+          bitcoin: {
+            price: cryptoData.bitcoin?.usd || 0,
+            priceInr: cryptoData.bitcoin?.inr || 0,
+            change24h: cryptoData.bitcoin?.usd_24h_change || 0,
+          },
+          ethereum: {
+            price: cryptoData.ethereum?.usd || 0,
+            priceInr: cryptoData.ethereum?.inr || 0,
+            change24h: cryptoData.ethereum?.usd_24h_change || 0,
+          },
+          binancecoin: {
+            price: cryptoData.binancecoin?.usd || 0,
+            priceInr: cryptoData.binancecoin?.inr || 0,
+            change24h: cryptoData.binancecoin?.usd_24h_change || 0,
+          },
+          cardano: {
+            price: cryptoData.cardano?.usd || 0,
+            priceInr: cryptoData.cardano?.inr || 0,
+            change24h: cryptoData.cardano?.usd_24h_change || 0,
+          },
+          solana: {
+            price: cryptoData.solana?.usd || 0,
+            priceInr: cryptoData.solana?.inr || 0,
+            change24h: cryptoData.solana?.usd_24h_change || 0,
+          },
+        },
+        timestamp: new Date().toISOString(),
+      }
+
       setMarketData(data)
       setLastUpdated(new Date())
     } catch (error) {
@@ -129,24 +203,30 @@ export default function DashboardPage() {
               <div className="mb-8">
                 <h2 className="text-xl font-semibold mb-4">Indian Indices</h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <PriceCard
-                    title="Nifty 50"
-                    price={marketData.indices.nifty50.price}
-                    change={parseFloat(marketData.indices.nifty50.change)}
-                    changePercent={parseFloat(marketData.indices.nifty50.changePercent)}
-                  />
-                  <PriceCard
-                    title="Bank Nifty"
-                    price={marketData.indices.bankNifty.price}
-                    change={parseFloat(marketData.indices.bankNifty.change)}
-                    changePercent={parseFloat(marketData.indices.bankNifty.changePercent)}
-                  />
-                  <PriceCard
-                    title="Sensex"
-                    price={marketData.indices.sensex.price}
-                    change={parseFloat(marketData.indices.sensex.change)}
-                    changePercent={parseFloat(marketData.indices.sensex.changePercent)}
-                  />
+                  {marketData.indices?.nifty50 && (
+                    <PriceCard
+                      title="Nifty 50"
+                      price={marketData.indices.nifty50.price}
+                      change={parseFloat(marketData.indices.nifty50.change)}
+                      changePercent={parseFloat(marketData.indices.nifty50.changePercent)}
+                    />
+                  )}
+                  {marketData.indices?.bankNifty && (
+                    <PriceCard
+                      title="Bank Nifty"
+                      price={marketData.indices.bankNifty.price}
+                      change={parseFloat(marketData.indices.bankNifty.change)}
+                      changePercent={parseFloat(marketData.indices.bankNifty.changePercent)}
+                    />
+                  )}
+                  {marketData.indices?.sensex && (
+                    <PriceCard
+                      title="Sensex"
+                      price={marketData.indices.sensex.price}
+                      change={parseFloat(marketData.indices.sensex.change)}
+                      changePercent={parseFloat(marketData.indices.sensex.changePercent)}
+                    />
+                  )}
                 </div>
               </div>
 
